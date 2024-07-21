@@ -46,7 +46,7 @@ public class Configuration {
             CommandLineParser parser = new DefaultParser();
             CommandLine cmd = parser.parse(options, args);
 
-            processOption(cmd, "o", Configuration::isOutputFileValid, cfg::setOutputPath);
+            processOption(cmd, "o", Configuration::isOutputPathValid, cfg::setOutputPath);
             processOption(cmd, "p", null, cfg::setPrefix);
             processFlag(cmd, "a", cfg::setAppendMode, true);
             processFlag(cmd, "s", (val) -> cfg.setStatisticsType(StatisticsType.SHORT), null);
@@ -77,9 +77,11 @@ public class Configuration {
         return Files.exists(path) && Files.isRegularFile(path) && Files.isReadable(path);
     }
 
-    private static boolean isOutputFileValid(String filename) {
+    private static void isOutputPathValid(String filename) {
         Path path = Paths.get(filename);
-        return Files.exists(path) && Files.isRegularFile(path) && Files.isWritable(path);
+        if(!Files.exists(path)) {
+            throw new ConfigurationException("Output path does not exist");
+        }
     }
 
     private static void processOption(CommandLine cmd, String option, OptionValidator validator, OptionConsumer consumer) throws ConfigurationException {
