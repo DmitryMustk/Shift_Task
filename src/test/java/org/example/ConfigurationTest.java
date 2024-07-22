@@ -4,6 +4,7 @@ import org.example.statistics.StatisticsType;
 import org.junit.jupiter.api.Test;
 
 import javax.naming.ConfigurationException;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -40,13 +41,19 @@ class ConfigurationTest {
     }
 
     @Test
-    void testParseWithOutputOption() {
-        String[] args = new String[]{"-o", "/valid/output/path"};
+    void testParseWithOutputOption() throws IOException {
+        String[] args = new String[]{"-o", "./path"};
 
-        Configuration cfg = CliArgsParser.getConfigurationFromCli(args);
+        Path tempDir = Files.createTempDirectory("tempDirPrefix");
+        Path outputPath = tempDir.resolve("./path");
+        Files.createDirectories(outputPath);
 
-        assertEquals("/valid/output/path", cfg.outputPath());
+        String[] updatedArgs = new String[]{"-o", outputPath.toString()};
+        Configuration cfg = CliArgsParser.getConfigurationFromCli(updatedArgs);
+
+        assertEquals(outputPath.toString(), cfg.outputPath());
     }
+
 
     @Test
     void testParseWithPrefixOption() {

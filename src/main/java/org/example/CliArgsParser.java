@@ -18,6 +18,7 @@ public class CliArgsParser {
 
     private static Configuration configuration;
 
+//    private CliArgsParser() {}
 
     public static Configuration getConfigurationFromCli(String[] args) {
         parse(args);
