@@ -1,8 +1,6 @@
 package org.example;
 
 import org.example.statistics.DataType;
-import org.example.statistics.StatisticsType;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -15,28 +13,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class FileFilterUtilityTest {
-
-    private FileFilterUtility utility;
-    private Configuration config;
-
-    @BeforeEach
-    void setUp(@TempDir Path tempDir) {
-        utility = new FileFilterUtility();
-        config = new Configuration();
-        config.setOutputPath(tempDir.toString());
-        config.setPrefix("sample-");
-        config.setAppendMode(false);
-        config.setStatisticsType(StatisticsType.SHORT);
-    }
-
+public class FileFilterUtilityTest { ;
     @Test
-    void testProcessFiles() throws IOException {
-        // Создаем временные файлы для входных данных
+    void testProcessFiles(@TempDir Path tempDir) throws IOException {
         Path inputFile1 = Files.createTempFile("in1", ".txt");
         Path inputFile2 = Files.createTempFile("in2", ".txt");
 
-        // Записываем тестовые данные в файлы
         List<String> lines1 = Arrays.asList(
                 "Lorem ipsum dolor sit amet",
                 "45",
@@ -58,22 +40,21 @@ public class FileFilterUtilityTest {
         Files.write(inputFile1, lines1);
         Files.write(inputFile2, lines2);
 
-        // Устанавливаем входные файлы в конфигурации
-        config.setInputFiles(Arrays.asList(inputFile1.toString(), inputFile2.toString()));
+        FileFilterUtility utility = new FileFilterUtility();
+        String[] args = {"-o", tempDir.toAbsolutePath().toString(), "-p", "sample", "-s", inputFile1.toString(), inputFile2.toString()};
+        Configuration config = CliArgsParser.getConfigurationFromCli(args);
 
-        // Запускаем обработку файлов
+
         utility.processFiles(config);
 
-        // Проверяем, что выходные файлы созданы
-        Path outputIntegers = Paths.get(config.getOutputPath(), config.getPrefix() + DataType.INTEGER.getFilename());
-        Path outputFloats = Paths.get(config.getOutputPath(), config.getPrefix() + DataType.FLOAT.getFilename());
-        Path outputStrings = Paths.get(config.getOutputPath(), config.getPrefix() + DataType.STRING.getFilename());
+        Path outputIntegers = Paths.get(config.outputPath(), config.prefix() + DataType.INTEGER.getFilename());
+        Path outputFloats = Paths.get(config.outputPath(), config.prefix() + DataType.FLOAT.getFilename());
+        Path outputStrings = Paths.get(config.outputPath(), config.prefix() + DataType.STRING.getFilename());
 
         assertTrue(Files.exists(outputIntegers));
         assertTrue(Files.exists(outputFloats));
         assertTrue(Files.exists(outputStrings));
 
-        // Проверяем содержимое выходных файлов
         List<String> expectedIntegers = Arrays.asList("45", "100500", "1234567890123456789");
         List<String> expectedFloats = Arrays.asList("3.1415", "-0.001", "1.528535047E-25");
         List<String> expectedStrings = Arrays.asList(

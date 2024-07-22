@@ -1,9 +1,9 @@
 package org.example;
 
-import org.example.exceptions.ConfigurationException;
 import org.example.statistics.StatisticsType;
 import org.junit.jupiter.api.Test;
 
+import javax.naming.ConfigurationException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -12,16 +12,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ConfigurationTest {
     @Test
-    void testParseDefaultValues() throws ConfigurationException {
+    void testParseDefaultValues() {
         String[] args = new String[]{};
 
-        Configuration cfg = Configuration.parse(args);
+        Configuration cfg = CliArgsParser.getConfigurationFromCli(args);
 
-        assertEquals(".", cfg.getOutputPath());
-        assertEquals("", cfg.getPrefix());
-        assertFalse(cfg.isAppendMode());
-        assertEquals(StatisticsType.SHORT, cfg.getStatisticsType());
-        assertTrue(cfg.getInputFiles().isEmpty());
+        assertEquals(".", cfg.outputPath());
+        assertEquals("", cfg.prefix());
+        assertFalse(cfg.appendMode());
+        assertEquals(StatisticsType.SHORT, cfg.statisticsType());
+        assertTrue(cfg.inputFiles().isEmpty());
     }
 
     @Test
@@ -31,56 +31,56 @@ class ConfigurationTest {
 
         String[] args = new String[]{tempFile1.toString(), tempFile2.toString()};
 
-        Configuration cfg = Configuration.parse(args);
+        Configuration cfg = CliArgsParser.getConfigurationFromCli(args);
 
-        assertEquals(List.of(tempFile1.toString(), tempFile2.toString()), cfg.getInputFiles());
+        assertEquals(List.of(tempFile1.toString(), tempFile2.toString()), cfg.inputFiles());
 
         Files.delete(tempFile1);
         Files.delete(tempFile2);
     }
 
     @Test
-    void testParseWithOutputOption() throws ConfigurationException {
+    void testParseWithOutputOption() {
         String[] args = new String[]{"-o", "/valid/output/path"};
 
-        Configuration cfg = Configuration.parse(args);
+        Configuration cfg = CliArgsParser.getConfigurationFromCli(args);
 
-        assertEquals("/valid/output/path", cfg.getOutputPath());
+        assertEquals("/valid/output/path", cfg.outputPath());
     }
 
     @Test
-    void testParseWithPrefixOption() throws ConfigurationException {
+    void testParseWithPrefixOption() {
         String[] args = new String[]{"-p", "prefix_"};
 
-        Configuration cfg = Configuration.parse(args);
+        Configuration cfg = CliArgsParser.getConfigurationFromCli(args);
 
-        assertEquals("prefix_", cfg.getPrefix());
+        assertEquals("prefix_", cfg.prefix());
     }
 
     @Test
-    void testParseWithAppendFlag() throws ConfigurationException {
+    void testParseWithAppendFlag() {
         String[] args = new String[]{"-a"};
 
-        Configuration cfg = Configuration.parse(args);
+        Configuration cfg = CliArgsParser.getConfigurationFromCli(args);
 
-        assertTrue(cfg.isAppendMode());
+        assertTrue(cfg.appendMode());
     }
 
     @Test
-    void testParseWithShortStatisticsFlag() throws ConfigurationException {
+    void testParseWithShortStatisticsFlag() {
         String[] args = new String[]{"-s"};
 
-        Configuration cfg = Configuration.parse(args);
+        Configuration cfg = CliArgsParser.getConfigurationFromCli(args);
 
-        assertEquals(StatisticsType.SHORT, cfg.getStatisticsType());
+        assertEquals(StatisticsType.SHORT, cfg.statisticsType());
     }
 
     @Test
-    void testParseWithFullStatisticsFlag() throws ConfigurationException {
+    void testParseWithFullStatisticsFlag() {
         String[] args = new String[]{"-f"};
 
-        Configuration cfg = Configuration.parse(args);
+        Configuration cfg = CliArgsParser.getConfigurationFromCli(args);
 
-        assertEquals(StatisticsType.FULL, cfg.getStatisticsType());
+        assertEquals(StatisticsType.FULL, cfg.statisticsType());
     }
 }

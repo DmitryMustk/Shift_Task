@@ -18,7 +18,7 @@ public class FileFilterUtility {
 
     public void processFiles(Configuration config) throws IOException {
         Map<DataType, List<String>> dataMap = new EnumMap<>(DataType.class);
-        config.getInputFiles().forEach(file -> readAndClassify(file, dataMap));
+        config.inputFiles().forEach(file -> readAndClassify(file, dataMap));
 
         Map<DataType, Statistics> statisticsMap = collectStatistics(dataMap);
         writeOutputFiles(config, dataMap);
@@ -29,8 +29,12 @@ public class FileFilterUtility {
         for (Map.Entry<DataType, List<String>> entry : dataMap.entrySet()) {
             DataType type = entry.getKey();
             List<String> data = entry.getValue();
-            Path outputPath = Paths.get(config.getOutputPath(), config.getPrefix() + type.getFilename());
-            try (BufferedWriter writer = Files.newBufferedWriter(outputPath, config.isAppendMode() ? StandardOpenOption.APPEND : StandardOpenOption.CREATE, StandardOpenOption.CREATE)) {
+            Path outputPath = Paths.get(config.outputPath(), config.prefix() + type.getFilename());
+            try (BufferedWriter writer = Files.newBufferedWriter(outputPath,
+                    config.appendMode() ? StandardOpenOption.APPEND : StandardOpenOption.CREATE,
+                    StandardOpenOption.CREATE)
+            )
+            {
                 for (String line : data) {
                     writer.write(line);
                     writer.newLine();
@@ -44,7 +48,7 @@ public class FileFilterUtility {
     private void printStatistics(Configuration config, Map<DataType, Statistics> statsMap) {
         statsMap.forEach((type, stats) -> {
             System.out.println(type.getLabel() + " Statistics:");
-            if (config.getStatisticsType() == StatisticsType.FULL) {
+            if (config.statisticsType() == StatisticsType.FULL) {
                 System.out.println(stats.fullStatistics());
             } else {
                 System.out.println(stats.shortStatistics());

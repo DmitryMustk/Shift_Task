@@ -5,7 +5,7 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) {
         try {
-            Configuration cfg = Configuration.parse(args);
+            Configuration cfg = CliArgsParser.getConfigurationFromCli(args);
             FileFilterUtility filterUtility = new FileFilterUtility();
             filterUtility.processFiles(cfg);
         } catch (IOException e) {

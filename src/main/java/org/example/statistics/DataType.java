@@ -1,8 +1,6 @@
 package org.example.statistics;
 
-import lombok.Getter;
 
-@Getter
 public enum DataType {
     INTEGER("integers.txt", "Integer"),
     FLOAT("floats.txt", "Float"),
@@ -19,5 +17,9 @@ public enum DataType {
 
     public String getFilename() {
         return fileName;
+    }
+
+    public String getLabel() {
+        return label;
     }
 }
